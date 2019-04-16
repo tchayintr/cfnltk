@@ -563,7 +563,7 @@ class CFG(object):
         :param input: a grammar, either in the form of a string or as a list of strings.
         """
         start, productions = read_grammar(
-            input, standard_nonterm_parser, encoding=encoding
+            input, cf_nonterm_parser, encoding=encoding
         )
         return cls(start, productions)
 
@@ -1266,7 +1266,7 @@ class PCFG(CFG):
              as a list of strings.
         """
         start, productions = read_grammar(
-            input, standard_nonterm_parser, probabilistic=True, encoding=encoding
+            input, cf_nonterm_parser, probabilistic=True, encoding=encoding
         )
         return cls(start, productions)
 
@@ -1319,14 +1319,14 @@ def _read_cfg_production(input):
     """
     Return a list of context-free ``Productions``.
     """
-    return _read_production(input, standard_nonterm_parser)
+    return _read_production(input, cf_nonterm_parser)
 
 
 def _read_pcfg_production(input):
     """
     Return a list of PCFG ``ProbabilisticProductions``.
     """
-    return _read_production(input, standard_nonterm_parser, probabilistic=True)
+    return _read_production(input, cf_nonterm_parser, probabilistic=True)
 
 
 def _read_fcfg_production(input, fstruct_reader):
@@ -1465,10 +1465,16 @@ def read_grammar(input, nonterm_parser, probabilistic=False, encoding=None):
 
 
 _STANDARD_NONTERM_RE = re.compile('( [\w/][\w/^<>-]* ) \s*', re.VERBOSE)
-
+_CF_NONTERM_RE = re.compile('( [\w/][\w(),/^<>-]* ) \s*', re.VERBOSE)
 
 def standard_nonterm_parser(string, pos):
     m = _STANDARD_NONTERM_RE.match(string, pos)
+    if not m:
+        raise ValueError('Expected a nonterminal, found: ' + string[pos:])
+    return (Nonterminal(m.group(1)), m.end())
+
+def cf_nonterm_parser(string, pos):
+    m = _CF_NONTERM_RE.match(string, pos)
     if not m:
         raise ValueError('Expected a nonterminal, found: ' + string[pos:])
     return (Nonterminal(m.group(1)), m.end())
