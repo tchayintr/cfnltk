@@ -48,3 +48,6 @@ For license information, see [LICENSE.txt](LICENSE.txt).
 - NLTK corpora are provided under the terms given in the README file for each
   corpus; all are redistributable and available for non-commercial use.
 - NLTK may be freely redistributed, subject to the provisions of these licenses.
+
+## CFparser updates
+- Updates to support grammar in CFparser format (e.g. S -> NP VP(1))
